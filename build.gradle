@@ -49,6 +49,13 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
+tasks.named('compileJava') {
+    options.compilerArgs = [
+            '-Amapstruct.defaultComponentModel=spring',
+            '-parameters'
+    ]
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
