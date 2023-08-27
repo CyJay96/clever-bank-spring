@@ -15,5 +15,5 @@ public interface BankService {
 
     BankDtoResponse update(Long id, BankDtoRequest bankDtoRequest);
 
-    void deleteById(Long id);
+    BankDtoResponse deleteById(Long id);
 }

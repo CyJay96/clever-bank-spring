@@ -16,12 +16,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.cleverbank.exception.EntityNotFoundException;
 import ru.clevertec.cleverbank.model.dto.request.TransactionDtoRequest;
 import ru.clevertec.cleverbank.model.dto.response.PageResponse;
 import ru.clevertec.cleverbank.model.dto.response.TransactionDtoResponse;
 import ru.clevertec.cleverbank.service.TransactionService;
+
+import java.math.BigDecimal;
 
 /**
  * Transaction API
@@ -106,6 +109,60 @@ public class TransactionController {
             @RequestBody TransactionDtoRequest transactionDtoRequest
     ) {
         TransactionDtoResponse transaction = transactionService.update(id, transactionDtoRequest);
+        return new ResponseEntity<>(transaction, HttpStatus.OK);
+    }
+
+    /**
+     * PATCH /api/v0/transactions/replenishBalance : Replenish balance an existing Account entity by ID
+     *
+     * @param accountId Account ID to replenish balance (required)
+     * @param amount Amount of funds to replenish balance (required)
+     * @throws EntityNotFoundException if Account entity with ID doesn't exist
+     * @return Account DTO by ID with replenished balance
+     */
+    @PatchMapping("/replenishBalance")
+    public ResponseEntity<TransactionDtoResponse> replenishBalance(
+            @RequestParam @NotNull String accountId,
+            @RequestParam @NotNull @PositiveOrZero BigDecimal amount
+    ) {
+        TransactionDtoResponse transaction = transactionService.replenishBalance(accountId, amount);
+        return new ResponseEntity<>(transaction, HttpStatus.OK);
+    }
+
+    /**
+     * PATCH /api/v0/transactions/withdrawBalance/ : Withdraw balance an existing Account entity by ID
+     *
+     * @param accountId Account ID to withdraw balance (required)
+     * @param amount Amount of funds to withdraw balance (required)
+     * @throws EntityNotFoundException if Account entity with ID doesn't exist
+     * @return Account DTO by ID with withdrawn balance
+     */
+    @PatchMapping("/withdrawBalance")
+    public ResponseEntity<TransactionDtoResponse> withdrawBalance(
+            @RequestParam @NotNull String accountId,
+            @RequestParam @NotNull @PositiveOrZero BigDecimal amount
+    ) {
+        TransactionDtoResponse transaction = transactionService.withdrawBalance(accountId, amount);
+        return new ResponseEntity<>(transaction, HttpStatus.OK);
+    }
+
+    /**
+     * PATCH /api/v0/transactions/transferFunds : Transfer funds to another user
+     * by supplier and consumer accounts IDs
+     *
+     * @param supplierId Supplier ID to transfer funds (required)
+     * @param consumerId Consumer ID to transfer funds (required)
+     * @param amount Amount of funds to transfer (required)
+     * @throws EntityNotFoundException if Account entity with ID doesn't exist
+     * @return partial updated Transaction DTO by ID
+     */
+    @PatchMapping("/transferFunds")
+    public ResponseEntity<TransactionDtoResponse> transferFunds(
+            @RequestParam @NotNull String supplierId,
+            @RequestParam @NotNull String consumerId,
+            @RequestParam @NotNull BigDecimal amount
+            ) {
+        TransactionDtoResponse transaction = transactionService.transferFunds(supplierId, consumerId, amount);
         return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
 

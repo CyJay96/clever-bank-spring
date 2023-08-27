@@ -24,11 +24,13 @@ public interface AccountMapper {
     @Mapping(target = "bank", ignore = true)
     @Mapping(target = "createDate", expression = "java(java.time.OffsetDateTime.now())")
     @Mapping(target = "lastUpdateDate", expression = "java(java.time.OffsetDateTime.now())")
-    @Mapping(target = "status", expression = "java(Status.ACTIVE)")
+    @Mapping(target = "status", ignore = true)
     Account toAccount(AccountDtoRequest accountDtoRequest);
 
     @Mapping(target = "userId", expression = "java(account.getUser().getId())")
     @Mapping(target = "bankId", expression = "java(account.getBank().getId())")
+    @Mapping(target = "consumersIds", expression = "java(account.getConsumers().stream().map(consumer -> consumer.getId()).toList())")
+    @Mapping(target = "suppliersIds", expression = "java(account.getSuppliers().stream().map(supplier -> supplier.getId()).toList())")
     AccountDtoResponse toAccountDtoResponse(Account account);
 
     @BeanMapping(

@@ -1,12 +1,13 @@
 package ru.clevertec.cleverbank.model.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import org.hibernate.validator.constraints.Length;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 
@@ -15,14 +16,12 @@ import java.io.Serializable;
  *
  * @author Konstantin Voytko
  */
-@Data
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AccountDtoRequest implements Serializable {
-
-    @NotBlank(message = "Number cannot be empty")
-    @Length(max = 255, message = "Number is too long")
-    @JsonProperty(value = "number")
-    private String number;
 
     @NotNull(message = "User ID cannot be null")
     @PositiveOrZero(message = "User ID must be positive or zero")

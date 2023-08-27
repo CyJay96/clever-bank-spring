@@ -4,10 +4,9 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,12 +15,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.clevertec.cleverbank.model.enums.Status;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Account entity to store in the database
@@ -37,14 +40,14 @@ import java.time.OffsetDateTime;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class Account implements BaseEntity<Long> {
+public class Account implements BaseEntity<String> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UuidGenerator
     @EqualsAndHashCode.Exclude
-    private Long id;
+    private String id;
 
-    private String number;
+    private BigDecimal balance;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
@@ -55,6 +58,18 @@ public class Account implements BaseEntity<Long> {
     @EqualsAndHashCode.Exclude
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Bank bank;
+
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
+    private List<Transaction> suppliers = new ArrayList<>();
+
+    @Builder.Default
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL)
+    private List<Transaction> consumers = new ArrayList<>();
 
     @CreatedDate
     @Builder.Default

@@ -2,7 +2,6 @@ package ru.clevertec.cleverbank.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -70,7 +69,7 @@ public class AccountController {
      * @return found Account DTO by ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<AccountDtoResponse> findById(@PathVariable @NotNull @PositiveOrZero Long id) {
+    public ResponseEntity<AccountDtoResponse> findById(@PathVariable @NotNull String id) {
         AccountDtoResponse account = accountService.findById(id);
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
@@ -85,7 +84,7 @@ public class AccountController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<AccountDtoResponse> update(
-            @PathVariable @NotNull @PositiveOrZero Long id,
+            @PathVariable @NotNull String id,
             @RequestBody @Valid AccountDtoRequest accountDtoRequest
     ) {
         AccountDtoResponse account = accountService.update(id, accountDtoRequest);
@@ -102,7 +101,7 @@ public class AccountController {
      */
     @PatchMapping("/{id}")
     public ResponseEntity<AccountDtoResponse> updatePartially(
-            @PathVariable @NotNull @PositiveOrZero Long id,
+            @PathVariable @NotNull String id,
             @RequestBody AccountDtoRequest accountDtoRequest
     ) {
         AccountDtoResponse account = accountService.update(id, accountDtoRequest);
@@ -114,10 +113,11 @@ public class AccountController {
      *
      * @param id Account ID to delete (required)
      * @throws EntityNotFoundException if the Account entity with ID doesn't exist
+     * @return deleted Account DTO by ID
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable @NotNull @PositiveOrZero Long id) {
-        accountService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<AccountDtoResponse> deleteById(@PathVariable @NotNull String id) {
+        AccountDtoResponse account = accountService.deleteById(id);
+        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 }

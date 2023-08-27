@@ -114,10 +114,11 @@ public class BankController {
      *
      * @param id Bank ID to delete (required)
      * @throws EntityNotFoundException if the Bank entity with ID doesn't exist
+     * @return deleted Bank DTO by ID
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable @NotNull @PositiveOrZero Long id) {
-        bankService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<BankDtoResponse> deleteById(@PathVariable @NotNull @PositiveOrZero Long id) {
+        BankDtoResponse bank = bankService.deleteById(id);
+        return new ResponseEntity<>(bank, HttpStatus.OK);
     }
 }

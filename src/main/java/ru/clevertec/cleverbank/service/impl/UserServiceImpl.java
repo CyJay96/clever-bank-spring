@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.cleverbank.exception.EntityNotFoundException;
 import ru.clevertec.cleverbank.mapper.UserMapper;
 import ru.clevertec.cleverbank.model.dto.request.UserDtoRequest;
 import ru.clevertec.cleverbank.model.dto.response.PageResponse;
 import ru.clevertec.cleverbank.model.dto.response.UserDtoResponse;
 import ru.clevertec.cleverbank.model.entity.User;
+import ru.clevertec.cleverbank.model.enums.Status;
 import ru.clevertec.cleverbank.repository.UserRepository;
 import ru.clevertec.cleverbank.service.UserService;
 
@@ -34,8 +36,10 @@ public class UserServiceImpl implements UserService {
      * @return saved User DTO
      */
     @Override
+    @Transactional
     public UserDtoResponse save(UserDtoRequest userDtoRequest) {
         User user = userMapper.toUser(userDtoRequest);
+        user.setStatus(Status.ACTIVE);
         User savedUser = userRepository.save(user);
         return userMapper.toUserDtoResponse(savedUser);
     }
@@ -47,6 +51,7 @@ public class UserServiceImpl implements UserService {
      * @return all User DTOs
      */
     @Override
+    @Transactional
     public PageResponse<UserDtoResponse> findAll(Pageable pageable) {
         Page<User> userPage = userRepository.findAll(pageable);
 
@@ -70,6 +75,7 @@ public class UserServiceImpl implements UserService {
      * @return found User DTO by ID
      */
     @Override
+    @Transactional
     public UserDtoResponse findById(Long id) {
         return userRepository.findById(id)
                 .map(userMapper::toUserDtoResponse)
@@ -85,6 +91,7 @@ public class UserServiceImpl implements UserService {
      * @return updated User DTO by ID
      */
     @Override
+    @Transactional
     public UserDtoResponse update(Long id, UserDtoRequest userDtoRequest) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, id));
@@ -97,13 +104,14 @@ public class UserServiceImpl implements UserService {
      *
      * @param id User ID to delete
      * @throws EntityNotFoundException if the User entity with ID doesn't exist
+     * @return deleted User DTO by ID
      */
     @Override
-    public void deleteById(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException(User.class, id);
-        }
-
-        userRepository.deleteById(id);
+    @Transactional
+    public UserDtoResponse deleteById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(User.class, id));
+        user.setStatus(Status.DELETED);
+        return userMapper.toUserDtoResponse(userRepository.save(user));
     }
 }

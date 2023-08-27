@@ -114,10 +114,11 @@ public class UserController {
      *
      * @param id User ID to delete (required)
      * @throws EntityNotFoundException if the User entity with ID doesn't exist
+     * @return deleted User DTO by ID
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable @NotNull @PositiveOrZero Long id) {
-        userService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<UserDtoResponse> deleteById(@PathVariable @NotNull @PositiveOrZero Long id) {
+        UserDtoResponse user = userService.deleteById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

@@ -11,9 +11,9 @@ public interface AccountService {
 
     PageResponse<AccountDtoResponse> findAll(Pageable pageable);
 
-    AccountDtoResponse findById(Long id);
+    AccountDtoResponse findById(String id);
 
-    AccountDtoResponse update(Long id, AccountDtoRequest accountDtoRequest);
+    AccountDtoResponse update(String id, AccountDtoRequest accountDtoRequest);
 
-    void deleteById(Long id);
+    AccountDtoResponse deleteById(String id);
 }
