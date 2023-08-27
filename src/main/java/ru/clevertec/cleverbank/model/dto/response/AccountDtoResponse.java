@@ -8,7 +8,6 @@ import ru.clevertec.cleverbank.model.enums.Status;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.List;
 
 /**
  * Account DTO for responses
@@ -30,12 +29,6 @@ public class AccountDtoResponse implements Serializable {
 
     @JsonProperty(value = "bankId")
     private Long bankId;
-
-    @JsonProperty(value = "consumersIds")
-    private List<Long> consumersIds;
-
-    @JsonProperty(value = "suppliersIds")
-    private List<Long> suppliersIds;
 
     @JsonProperty(value = "createDate")
     private OffsetDateTime createDate;

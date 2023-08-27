@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.cleverbank.exception.EntityNotFoundException;
 import ru.clevertec.cleverbank.model.dto.request.AccountDtoRequest;
 import ru.clevertec.cleverbank.model.dto.response.AccountDtoResponse;
 import ru.clevertec.cleverbank.model.dto.response.PageResponse;
+import ru.clevertec.cleverbank.model.dto.response.statement.StatementDto;
+import ru.clevertec.cleverbank.model.enums.StatementPeriod;
 import ru.clevertec.cleverbank.service.AccountService;
 
 /**
@@ -34,6 +37,23 @@ public class AccountController {
     private final AccountService accountService;
 
     public static final String COMMENT_API_PATH = "/api/v0/accounts";
+
+    /**
+     * GET /api/v0/accounts/{id} : Get Account Statement info by ID
+     *
+     * @param id Account ID to get statement info (required)
+     * @param statementPeriod Statement period to get statement info (required)
+     * @throws EntityNotFoundException if the Account entity with ID doesn't exist
+     * @return got Statement DTO by ID
+     */
+    @GetMapping("/statement")
+    public ResponseEntity<StatementDto> getStatementByAccountId(
+            @RequestParam @NotNull String id,
+            @RequestParam @NotNull StatementPeriod statementPeriod
+    ) {
+        StatementDto statement = accountService.getStatementByAccountId(id, statementPeriod);
+        return new ResponseEntity<>(statement, HttpStatus.OK);
+    }
 
     /**
      * POST /api/v0/accounts : Save a new Account entity

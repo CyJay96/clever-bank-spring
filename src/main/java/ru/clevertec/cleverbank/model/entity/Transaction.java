@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.clevertec.cleverbank.model.enums.Status;
 import ru.clevertec.cleverbank.model.enums.TransactionType;
@@ -66,12 +65,6 @@ public class Transaction implements BaseEntity<Long> {
     @EqualsAndHashCode.Exclude
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private OffsetDateTime createDate = OffsetDateTime.now();
-
-    @LastModifiedDate
-    @Builder.Default
-    @EqualsAndHashCode.Exclude
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private OffsetDateTime lastUpdateDate = OffsetDateTime.now();
 
     @Enumerated(EnumType.STRING)
     private Status status;

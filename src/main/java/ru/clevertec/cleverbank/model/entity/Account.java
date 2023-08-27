@@ -6,7 +6,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,8 +22,6 @@ import ru.clevertec.cleverbank.model.enums.Status;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The Account entity to store in the database
@@ -59,18 +56,6 @@ public class Account implements BaseEntity<String> {
     @EqualsAndHashCode.Exclude
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Bank bank;
-
-    @Builder.Default
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
-    private List<Transaction> suppliers = new ArrayList<>();
-
-    @Builder.Default
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL)
-    private List<Transaction> consumers = new ArrayList<>();
 
     @CreatedDate
     @Builder.Default

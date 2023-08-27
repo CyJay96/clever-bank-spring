@@ -37,9 +37,6 @@ public class TransactionDtoResponse implements Serializable {
     @JsonProperty(value = "createDate")
     private OffsetDateTime createDate;
 
-    @JsonProperty(value = "lastUpdateDate")
-    private OffsetDateTime lastUpdateDate;
-
     @JsonProperty(value = "status")
     private Status status;
 }

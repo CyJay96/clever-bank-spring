@@ -56,7 +56,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .amount(transactionDtoRequest.getAmount())
                 .transactionType(TransactionType.REPLENISHMENT)
                 .createDate(OffsetDateTime.now())
-                .lastUpdateDate(OffsetDateTime.now())
                 .status(Status.ACTIVE)
                 .build();
 
@@ -85,7 +84,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .amount(transactionDtoRequest.getAmount())
                 .transactionType(TransactionType.WITHDRAWAL)
                 .createDate(OffsetDateTime.now())
-                .lastUpdateDate(OffsetDateTime.now())
                 .status(Status.ACTIVE)
                 .build();
 
@@ -119,7 +117,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .amount(transactionDtoRequest.getAmount())
                 .transactionType(TransactionType.TRANSFER)
                 .createDate(OffsetDateTime.now())
-                .lastUpdateDate(OffsetDateTime.now())
                 .status(Status.ACTIVE)
                 .build();
 
