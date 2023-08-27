@@ -47,7 +47,8 @@ public class Account implements BaseEntity<String> {
     @EqualsAndHashCode.Exclude
     private String id;
 
-    private BigDecimal balance;
+    @Builder.Default
+    private BigDecimal balance = BigDecimal.ZERO;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

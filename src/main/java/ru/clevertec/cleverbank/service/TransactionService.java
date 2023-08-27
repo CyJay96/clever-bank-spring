@@ -5,23 +5,17 @@ import ru.clevertec.cleverbank.model.dto.request.TransactionDtoRequest;
 import ru.clevertec.cleverbank.model.dto.response.PageResponse;
 import ru.clevertec.cleverbank.model.dto.response.TransactionDtoResponse;
 
-import java.math.BigDecimal;
-
 public interface TransactionService {
 
-    TransactionDtoResponse save(TransactionDtoRequest transactionDtoRequest);
+    TransactionDtoResponse replenishBalance(TransactionDtoRequest transactionDtoRequest);
+
+    TransactionDtoResponse withdrawBalance(TransactionDtoRequest transactionDtoRequest);
+
+    TransactionDtoResponse transferFunds(TransactionDtoRequest transactionDtoRequest);
 
     PageResponse<TransactionDtoResponse> findAll(Pageable pageable);
 
     TransactionDtoResponse findById(Long id);
 
-    TransactionDtoResponse update(Long id, TransactionDtoRequest transactionDtoRequest);
-
-    TransactionDtoResponse replenishBalance(String accountId, BigDecimal amount);
-
-    TransactionDtoResponse withdrawBalance(String accountId, BigDecimal amount);
-
-    TransactionDtoResponse transferFunds(String supplierId, String consumerId, BigDecimal amount);
-
-    void deleteById(Long id);
+    TransactionDtoResponse deleteById(Long id);
 }

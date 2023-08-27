@@ -9,10 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -71,40 +69,6 @@ public class AccountController {
     @GetMapping("/{id}")
     public ResponseEntity<AccountDtoResponse> findById(@PathVariable @NotNull String id) {
         AccountDtoResponse account = accountService.findById(id);
-        return new ResponseEntity<>(account, HttpStatus.OK);
-    }
-
-    /**
-     * PUT /api/v0/accounts/{id} : Update an existing Account entity info by ID
-     *
-     * @param id Account ID to update (required)
-     * @param accountDtoRequest Account DTO to update (required)
-     * @throws EntityNotFoundException if the Account entity with ID doesn't exist
-     * @return updated Account DTO by ID
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<AccountDtoResponse> update(
-            @PathVariable @NotNull String id,
-            @RequestBody @Valid AccountDtoRequest accountDtoRequest
-    ) {
-        AccountDtoResponse account = accountService.update(id, accountDtoRequest);
-        return new ResponseEntity<>(account, HttpStatus.OK);
-    }
-
-    /**
-     * PATCH /api/v0/accounts/{id} : Partial Update an existing Account entity info by ID
-     *
-     * @param id Account ID to partial update (required)
-     * @param accountDtoRequest Account DTO to partial update (required)
-     * @throws EntityNotFoundException if Account entity with ID doesn't exist
-     * @return partial updated Account DTO by ID
-     */
-    @PatchMapping("/{id}")
-    public ResponseEntity<AccountDtoResponse> updatePartially(
-            @PathVariable @NotNull String id,
-            @RequestBody AccountDtoRequest accountDtoRequest
-    ) {
-        AccountDtoResponse account = accountService.update(id, accountDtoRequest);
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
 

@@ -13,7 +13,5 @@ public interface AccountService {
 
     AccountDtoResponse findById(String id);
 
-    AccountDtoResponse update(String id, AccountDtoRequest accountDtoRequest);
-
     AccountDtoResponse deleteById(String id);
 }

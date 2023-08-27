@@ -5,13 +5,11 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.clevertec.cleverbank.model.dto.request.BankDtoRequest;
 import ru.clevertec.cleverbank.model.dto.response.BankDtoResponse;
 import ru.clevertec.cleverbank.model.entity.Bank;
-import ru.clevertec.cleverbank.model.enums.Status;
 
 /**
  * Mapper for Bank entities & DTOs
@@ -26,6 +24,7 @@ public interface BankMapper {
     @Mapping(target = "status", ignore = true)
     Bank toBank(BankDtoRequest bankDtoRequest);
 
+    @Mapping(target = "accountsIds", expression = "java(bank.getAccounts().stream().map(account -> account.getId()).toList())")
     BankDtoResponse toBankDtoResponse(Bank bank);
 
     @BeanMapping(

@@ -31,7 +31,7 @@ public class UserDtoResponse implements Serializable {
     private String email;
 
     @JsonProperty(value = "accounts")
-    private List<AccountDtoResponse> accounts;
+    private List<String> accountsIds;
 
     @JsonProperty(value = "createDate")
     private OffsetDateTime createDate;

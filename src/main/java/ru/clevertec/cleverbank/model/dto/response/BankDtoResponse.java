@@ -20,7 +20,7 @@ public class BankDtoResponse implements Serializable {
 
     private String title;
 
-    private List<AccountDtoResponse> accounts;
+    private List<String> accountsIds;
 
     private Status status;
 }

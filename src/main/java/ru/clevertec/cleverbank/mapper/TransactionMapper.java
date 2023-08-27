@@ -1,13 +1,8 @@
 package ru.clevertec.cleverbank.mapper;
 
-import org.mapstruct.BeanMapping;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import ru.clevertec.cleverbank.model.dto.request.TransactionDtoRequest;
 import ru.clevertec.cleverbank.model.dto.response.TransactionDtoResponse;
 import ru.clevertec.cleverbank.model.entity.Transaction;
 
@@ -19,19 +14,7 @@ import ru.clevertec.cleverbank.model.entity.Transaction;
 @Mapper(injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface TransactionMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createDate", expression = "java(java.time.OffsetDateTime.now())")
-    @Mapping(target = "lastUpdateDate", expression = "java(java.time.OffsetDateTime.now())")
-    Transaction toTransaction(TransactionDtoRequest transactionDtoRequest);
-
+    @Mapping(target = "supplierId", expression = "java(transaction.getSupplier() != null ? transaction.getSupplier().getId() : null)")
+    @Mapping(target = "consumerId", expression = "java(transaction.getConsumer() != null ? transaction.getConsumer().getId() : null)")
     TransactionDtoResponse toTransactionDtoResponse(Transaction transaction);
-
-    @BeanMapping(
-            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-            nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
-    )
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createDate", ignore = true)
-    @Mapping(target = "lastUpdateDate", expression = "java(java.time.OffsetDateTime.now())")
-    void updateTransaction(TransactionDtoRequest transactionDtoRequest, @MappingTarget Transaction transaction);
 }

@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,10 +26,12 @@ import static ru.clevertec.cleverbank.util.Constants.EMAIL_REGEX;
 @NoArgsConstructor
 public class UserDtoRequest implements Serializable {
 
+    @NotBlank(message = "User first name cannot be empty")
     @Length(max = 255, message = "User first name is too long")
     @JsonProperty(value = "firstName")
     private String firstName;
 
+    @NotBlank(message = "User last name cannot be empty")
     @Length(max = 255, message = "User last name is too long")
     @JsonProperty(value = "lastName")
     private String lastName;

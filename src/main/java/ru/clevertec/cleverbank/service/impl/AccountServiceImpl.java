@@ -99,23 +99,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * Update an existing Account entity info by ID
-     *
-     * @param id Account ID to update
-     * @param accountDtoRequest Account DTO to update
-     * @throws EntityNotFoundException if the Account entity with ID doesn't exist
-     * @return updated Account DTO by ID
-     */
-    @Override
-    @Transactional
-    public AccountDtoResponse update(String id, AccountDtoRequest accountDtoRequest) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Account.class, id));
-        accountMapper.updateAccount(accountDtoRequest, account);
-        return accountMapper.toAccountDtoResponse(accountRepository.save(account));
-    }
-
-    /**
      * Delete an Account entity by ID
      *
      * @param id Account ID to delete
