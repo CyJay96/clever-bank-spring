@@ -25,6 +25,7 @@ import ru.clevertec.cleverbank.repository.BankRepository;
 import ru.clevertec.cleverbank.repository.TransactionRepository;
 import ru.clevertec.cleverbank.repository.UserRepository;
 import ru.clevertec.cleverbank.service.AccountService;
+import ru.clevertec.cleverbank.service.DocumentService;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -44,6 +45,7 @@ public class AccountServiceImpl implements AccountService {
     private final BankRepository bankRepository;
     private final TransactionRepository transactionRepository;
     private final AccountMapper accountMapper;
+    private final DocumentService documentService;
 
     private static final String dateFormat = "dd.MM.yyyy";
     private static final String timeFormat = "HH:mm";
@@ -104,7 +106,7 @@ public class AccountServiceImpl implements AccountService {
                     .build();
         }).toList();
 
-        return AccountRecordDto.builder()
+        AccountRecordDto accountRecordDto = AccountRecordDto.builder()
                 .id(account.getId())
                 .bank(account.getBank().getTitle())
                 .client(client)
@@ -115,6 +117,10 @@ public class AccountServiceImpl implements AccountService {
                 .balance(account.getBalance().toString())
                 .transactions(shortTransactions)
                 .build();
+
+        documentService.saveAccountRecord(accountRecordDto);
+
+        return accountRecordDto;
     }
 
     /**
@@ -145,7 +151,7 @@ public class AccountServiceImpl implements AccountService {
         String replenishment = accountRepository.findReplenishmentSumById(id).toString();
         String withdrawal = "-" + accountRepository.findWithdrawalSumById(id).toString();
 
-        return StatementDto.builder()
+        StatementDto statementDto = StatementDto.builder()
                 .id(account.getId())
                 .bank(account.getBank().getTitle())
                 .client(client)
@@ -157,6 +163,10 @@ public class AccountServiceImpl implements AccountService {
                 .replenishment(replenishment)
                 .withdrawal(withdrawal)
                 .build();
+
+        documentService.saveStatement(statementDto);
+
+        return statementDto;
     }
 
     /**
