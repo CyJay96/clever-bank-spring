@@ -5,19 +5,17 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * Money statement DTO for responses
+ * Account record DTO for responses
  *
  * @author Konstantin Voytko
  */
 @Data
 @SuperBuilder
-public class StatementDto extends BaseStatementDto implements Serializable {
+public class AccountRecordDto extends BaseStatementDto implements Serializable {
 
-    @JsonProperty(value = "replenishment")
-    private String replenishment;
-
-    @JsonProperty(value = "withdrawal")
-    private String withdrawal;
+    @JsonProperty(value = "transactions")
+    private List<TransactionShortDto> transactions;
 }

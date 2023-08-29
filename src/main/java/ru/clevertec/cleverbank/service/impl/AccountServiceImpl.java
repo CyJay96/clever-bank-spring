@@ -10,6 +10,7 @@ import ru.clevertec.cleverbank.mapper.AccountMapper;
 import ru.clevertec.cleverbank.model.dto.request.AccountDtoRequest;
 import ru.clevertec.cleverbank.model.dto.response.AccountDtoResponse;
 import ru.clevertec.cleverbank.model.dto.response.PageResponse;
+import ru.clevertec.cleverbank.model.dto.response.statement.AccountRecordDto;
 import ru.clevertec.cleverbank.model.dto.response.statement.StatementDto;
 import ru.clevertec.cleverbank.model.dto.response.statement.TransactionShortDto;
 import ru.clevertec.cleverbank.model.entity.Account;
@@ -43,6 +44,118 @@ public class AccountServiceImpl implements AccountService {
     private final BankRepository bankRepository;
     private final TransactionRepository transactionRepository;
     private final AccountMapper accountMapper;
+
+    private static final String dateFormat = "dd.MM.yyyy";
+    private static final String timeFormat = "HH:mm";
+
+    /**
+     * Get Account record info by ID
+     *
+     * @param id Account ID to get account record info
+     * @param statementPeriod Statement period to get account statement info
+     * @throws EntityNotFoundException if the Account entity with ID doesn't exist
+     * @return got Account record DTO by ID
+     */
+    @Override
+    @Transactional
+    public AccountRecordDto getAccountRecordById(String id, StatementPeriod statementPeriod) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(Account.class, id));
+
+        User user = account.getUser();
+
+        String client = user.getLastName() + " " + user.getFirstName();
+        String accountCreateDate = account.getCreateDate().format(DateTimeFormatter.ofPattern(dateFormat));
+
+        OffsetDateTime periodPastDate = account.getCreateDate();
+        if (statementPeriod.equals(StatementPeriod.MONTH)) {
+            periodPastDate = OffsetDateTime.now().minusMonths(1);
+        }
+        if (statementPeriod.equals(StatementPeriod.YEAR)) {
+            periodPastDate = OffsetDateTime.now().minusYears(1);
+        }
+        String datePast = periodPastDate.format(DateTimeFormatter.ofPattern(dateFormat));
+        String dateNow = OffsetDateTime.now().format(DateTimeFormatter.ofPattern(dateFormat));
+        String period = datePast + " - " + dateNow;
+
+        String timeNow = OffsetDateTime.now().format(DateTimeFormatter.ofPattern(timeFormat));
+        String createDateTime = dateNow + ", " + timeNow;
+
+        List<Transaction> transactions = transactionRepository.findAllByAccounts(id, periodPastDate);
+        List<TransactionShortDto> shortTransactions = transactions.stream().map(transaction -> {
+            String date = transaction.getCreateDate().format(DateTimeFormatter.ofPattern(dateFormat));
+            String type = transaction.getTransactionType().toString();
+            if (transaction.getTransactionType().equals(TransactionType.TRANSFER)) {
+                if (transaction.getSupplier().getId().equals(id)) {
+                    type += " to " + transaction.getConsumer().getId();
+                } else {
+                    type += " from " + transaction.getSupplier().getId();
+                }
+            }
+            String amount = transaction.getAmount().toString();
+            if (transaction.getTransactionType().equals(TransactionType.WITHDRAWAL) || transaction.getSupplier() != null) {
+                amount = "-" + amount;
+            }
+
+            return TransactionShortDto.builder()
+                    .date(date)
+                    .type(type)
+                    .amount(amount)
+                    .build();
+        }).toList();
+
+        return AccountRecordDto.builder()
+                .bank(account.getBank().getTitle())
+                .client(client)
+                .account(account.getId())
+                .accountCreateDate(accountCreateDate)
+                .period(period)
+                .createDateTime(createDateTime)
+                .balance(account.getBalance().toString())
+                .transactions(shortTransactions)
+                .build();
+    }
+
+    /**
+     * Get money statement info by ID
+     *
+     * @param id Account ID to get money statement info
+     * @throws EntityNotFoundException if the Account entity with ID doesn't exist
+     * @return got Account money statement DTO by ID
+     */
+    @Override
+    @Transactional
+    public StatementDto getStatementById(String id) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(Account.class, id));
+
+        User user = account.getUser();
+
+        String client = user.getLastName() + " " + user.getFirstName();
+        String accountCreateDate = account.getCreateDate().format(DateTimeFormatter.ofPattern(dateFormat));
+
+        String datePast = account.getCreateDate().format(DateTimeFormatter.ofPattern(dateFormat));
+        String dateNow = OffsetDateTime.now().format(DateTimeFormatter.ofPattern(dateFormat));
+        String period = datePast + " - " + dateNow;
+
+        String timeNow = OffsetDateTime.now().format(DateTimeFormatter.ofPattern(timeFormat));
+        String createDateTime = dateNow + ", " + timeNow;
+
+        String replenishment = accountRepository.findReplenishmentSumById(id).toString();
+        String withdrawal = "-" + accountRepository.findWithdrawalSumById(id).toString();
+
+        return StatementDto.builder()
+                .bank(account.getBank().getTitle())
+                .client(client)
+                .account(account.getId())
+                .accountCreateDate(accountCreateDate)
+                .period(period)
+                .createDateTime(createDateTime)
+                .balance(account.getBalance().toString())
+                .replenishment(replenishment)
+                .withdrawal(withdrawal)
+                .build();
+    }
 
     /**
      * Save a new Account entity
@@ -105,72 +218,6 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findById(id)
                 .map(accountMapper::toAccountDtoResponse)
                 .orElseThrow(() -> new EntityNotFoundException(Account.class, id));
-    }
-
-    /**
-     * Get Account Statement info by ID
-     *
-     * @param id Account ID to get statement info
-     * @param statementPeriod Statement period to get statement info
-     * @throws EntityNotFoundException if the Account entity with ID doesn't exist
-     * @return got Statement DTO by ID
-     */
-    @Override
-    public StatementDto getStatementByAccountId(String id, StatementPeriod statementPeriod) {
-        final String dateFormat = "dd.MM.yyyy";
-        final String timeFormat = "HH:mm";
-
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Account.class, id));
-
-        User user = account.getUser();
-
-        String client = user.getLastName() + " " + user.getFirstName();
-        String accountCreateDate = account.getCreateDate().format(DateTimeFormatter.ofPattern(dateFormat));
-
-        OffsetDateTime periodPastDate = account.getCreateDate();
-        if (statementPeriod.equals(StatementPeriod.MONTH)) {
-            periodPastDate = OffsetDateTime.now().minusMonths(1);
-        }
-        if (statementPeriod.equals(StatementPeriod.YEAR)) {
-            periodPastDate = OffsetDateTime.now().minusYears(1);
-        }
-        String datePast = periodPastDate.format(DateTimeFormatter.ofPattern(dateFormat));
-        String dateNow = OffsetDateTime.now().format(DateTimeFormatter.ofPattern(dateFormat));
-        String period = datePast + " - " + dateNow;
-
-        String timeNow = OffsetDateTime.now().format(DateTimeFormatter.ofPattern(timeFormat));
-        String createDateTime = dateNow + ", " + timeNow;
-
-        List<Transaction> transactions = transactionRepository.findAllByAccounts(account.getId(), periodPastDate);
-        List<TransactionShortDto> shortTransactions = transactions.stream().map(transaction -> {
-            String date = transaction.getCreateDate().format(DateTimeFormatter.ofPattern(dateFormat));
-            String type = transaction.getTransactionType().toString();
-            if (transaction.getTransactionType().equals(TransactionType.TRANSFER)) {
-                type += " from " + transaction.getSupplier().getId();
-            }
-            String amount = transaction.getAmount().toString();
-            if (transaction.getTransactionType().equals(TransactionType.WITHDRAWAL)) {
-                amount = "-" + amount;
-            }
-
-            return TransactionShortDto.builder()
-                    .date(date)
-                    .type(type)
-                    .amount(amount)
-                    .build();
-        }).toList();
-
-        return StatementDto.builder()
-                .bank(account.getBank().getTitle())
-                .client(client)
-                .account(account.getId())
-                .accountCreateDate(accountCreateDate)
-                .period(period)
-                .createDateTime(createDateTime)
-                .balance(account.getBalance().toString())
-                .transactions(shortTransactions)
-                .build();
     }
 
     /**

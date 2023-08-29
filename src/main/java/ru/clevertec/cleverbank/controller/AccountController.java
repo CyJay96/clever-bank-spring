@@ -19,6 +19,7 @@ import ru.clevertec.cleverbank.exception.EntityNotFoundException;
 import ru.clevertec.cleverbank.model.dto.request.AccountDtoRequest;
 import ru.clevertec.cleverbank.model.dto.response.AccountDtoResponse;
 import ru.clevertec.cleverbank.model.dto.response.PageResponse;
+import ru.clevertec.cleverbank.model.dto.response.statement.AccountRecordDto;
 import ru.clevertec.cleverbank.model.dto.response.statement.StatementDto;
 import ru.clevertec.cleverbank.model.enums.StatementPeriod;
 import ru.clevertec.cleverbank.service.AccountService;
@@ -39,19 +40,32 @@ public class AccountController {
     public static final String COMMENT_API_PATH = "/api/v0/accounts";
 
     /**
-     * GET /api/v0/accounts/{id} : Get Account Statement info by ID
+     * GET /api/v0/accounts/record : Get Account record info by ID
      *
-     * @param id Account ID to get statement info (required)
-     * @param statementPeriod Statement period to get statement info (required)
+     * @param id Account ID to get account record info (required)
+     * @param statementPeriod Statement period to get account statement info (required)
      * @throws EntityNotFoundException if the Account entity with ID doesn't exist
-     * @return got Statement DTO by ID
+     * @return got Account record DTO by ID
      */
-    @GetMapping("/statement")
-    public ResponseEntity<StatementDto> getStatementByAccountId(
+    @GetMapping("/record")
+    public ResponseEntity<AccountRecordDto> getAccountRecordById(
             @RequestParam @NotNull String id,
             @RequestParam @NotNull StatementPeriod statementPeriod
     ) {
-        StatementDto statement = accountService.getStatementByAccountId(id, statementPeriod);
+        AccountRecordDto accountRecord = accountService.getAccountRecordById(id, statementPeriod);
+        return new ResponseEntity<>(accountRecord, HttpStatus.OK);
+    }
+
+    /**
+     * GET /api/v0/accounts/statement : Get money statement info by ID
+     *
+     * @param id Account ID to get money statement info (required)
+     * @throws EntityNotFoundException if the Account entity with ID doesn't exist
+     * @return got Account money statement DTO by ID
+     */
+    @GetMapping("/statement")
+    public ResponseEntity<StatementDto> getStatementById(@RequestParam @NotNull String id) {
+        StatementDto statement = accountService.getStatementById(id);
         return new ResponseEntity<>(statement, HttpStatus.OK);
     }
 

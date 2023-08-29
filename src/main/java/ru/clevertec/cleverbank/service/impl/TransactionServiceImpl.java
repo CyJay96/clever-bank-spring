@@ -10,6 +10,7 @@ import ru.clevertec.cleverbank.mapper.TransactionMapper;
 import ru.clevertec.cleverbank.model.dto.request.TransactionDtoRequest;
 import ru.clevertec.cleverbank.model.dto.response.PageResponse;
 import ru.clevertec.cleverbank.model.dto.response.TransactionDtoResponse;
+import ru.clevertec.cleverbank.model.dto.response.statement.CheckDto;
 import ru.clevertec.cleverbank.model.entity.Account;
 import ru.clevertec.cleverbank.model.entity.Transaction;
 import ru.clevertec.cleverbank.model.enums.Status;
@@ -19,6 +20,7 @@ import ru.clevertec.cleverbank.repository.TransactionRepository;
 import ru.clevertec.cleverbank.service.TransactionService;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -59,6 +61,8 @@ public class TransactionServiceImpl implements TransactionService {
                 .status(Status.ACTIVE)
                 .build();
 
+        System.out.println(getCheck(transaction));
+
         return transactionMapper.toTransactionDtoResponse(transactionRepository.save(transaction));
     }
 
@@ -86,6 +90,8 @@ public class TransactionServiceImpl implements TransactionService {
                 .createDate(OffsetDateTime.now())
                 .status(Status.ACTIVE)
                 .build();
+
+        System.out.println(getCheck(transaction));
 
         return transactionMapper.toTransactionDtoResponse(transactionRepository.save(transaction));
     }
@@ -119,6 +125,8 @@ public class TransactionServiceImpl implements TransactionService {
                 .createDate(OffsetDateTime.now())
                 .status(Status.ACTIVE)
                 .build();
+
+        System.out.println(getCheck(transaction));
 
         return transactionMapper.toTransactionDtoResponse(transactionRepository.save(transaction));
     }
@@ -175,5 +183,24 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new EntityNotFoundException(Transaction.class, id));
         transaction.setStatus(Status.DELETED);
         return transactionMapper.toTransactionDtoResponse(transactionRepository.save(transaction));
+    }
+
+    private CheckDto getCheck(Transaction transaction) {
+        final String dateFormat = "dd-MM-yyyy";
+        final String timeFormat = "HH:mm:ss";
+
+        String date = OffsetDateTime.now().format(DateTimeFormatter.ofPattern(dateFormat));
+        String time = OffsetDateTime.now().format(DateTimeFormatter.ofPattern(timeFormat));
+
+        return CheckDto.builder()
+                .date(date)
+                .time(time)
+                .transactionType(transaction.getTransactionType().toString())
+                .supplierBank(transaction.getSupplier() != null ? transaction.getSupplier().getBank().getTitle() : null)
+                .consumerBank(transaction.getConsumer() != null ? transaction.getConsumer().getBank().getTitle() : null)
+                .supplierAccount(transaction.getSupplier() != null ? transaction.getSupplier().getId() : null)
+                .consumerAccount(transaction.getConsumer() != null ? transaction.getConsumer().getId() : null)
+                .amount(transaction.getAmount().toString())
+                .build();
     }
 }
