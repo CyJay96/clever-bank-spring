@@ -230,5 +230,89 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Transactional
     public void saveStatement(StatementDto statementDto) {
+        String folderName = "statement-money";
+        String date = OffsetDateTime.now().format(DateTimeFormatter.ofPattern(dateFormat));
+        String path = folderName + "/statement-money-" + date + ".pdf";
+
+        File receiptFolder = new File(folderName);
+        if (!receiptFolder.exists()) {
+            receiptFolder.mkdir();
+        }
+
+        try(PdfWriter pdfWriter = new PdfWriter(path)) {
+            PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+            pdfDocument.setDefaultPageSize(PageSize.A2);
+            Document document = new Document(pdfDocument);
+
+            float[] oneColumnsWidth = {400f};
+            float[] twoColumnsWidth = {150f, 250f};
+            float[] twoShortColumnsWidth = {150f, 150f};
+            float borderWidth = 0.5f;
+
+            Table headerTable = new Table(oneColumnsWidth);
+            headerTable.addCell(new Cell().add(new Paragraph("Money statement"))
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBorder(Border.NO_BORDER));
+            headerTable.addCell(new Cell().add(new Paragraph(statementDto.getBank()))
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBorder(Border.NO_BORDER));
+            document.add(headerTable);
+
+            Table bodyTable = new Table(twoColumnsWidth);
+            bodyTable.addCell(new Cell().add(new Paragraph("Client"))
+                    .setBorder(Border.NO_BORDER)
+                    .setBorderRight(new SolidBorder(borderWidth)));
+            bodyTable.addCell(new Cell().add(new Paragraph(statementDto.getClient()))
+                    .setBorder(Border.NO_BORDER));
+            bodyTable.addCell(new Cell().add(new Paragraph("Account"))
+                    .setBorder(Border.NO_BORDER)
+                    .setBorderRight(new SolidBorder(borderWidth)));
+            bodyTable.addCell(new Cell().add(new Paragraph(statementDto.getAccount()))
+                    .setBorder(Border.NO_BORDER));
+            bodyTable.addCell(new Cell().add(new Paragraph("Opening date"))
+                    .setBorder(Border.NO_BORDER)
+                    .setBorderRight(new SolidBorder(borderWidth)));
+            bodyTable.addCell(new Cell().add(new Paragraph(statementDto.getAccountCreateDate()))
+                    .setBorder(Border.NO_BORDER));
+            bodyTable.addCell(new Cell().add(new Paragraph("Period"))
+                    .setBorder(Border.NO_BORDER)
+                    .setBorderRight(new SolidBorder(borderWidth)));
+            bodyTable.addCell(new Cell().add(new Paragraph(statementDto.getPeriod()))
+                    .setBorder(Border.NO_BORDER));
+            bodyTable.addCell(new Cell().add(new Paragraph("Date and time of formation"))
+                    .setBorder(Border.NO_BORDER)
+                    .setBorderRight(new SolidBorder(borderWidth)));
+            bodyTable.addCell(new Cell().add(new Paragraph(statementDto.getCreateDateTime()))
+                    .setBorder(Border.NO_BORDER));
+            bodyTable.addCell(new Cell().add(new Paragraph("Balance"))
+                    .setBorder(Border.NO_BORDER)
+                    .setBorderRight(new SolidBorder(borderWidth)));
+            bodyTable.addCell(new Cell().add(new Paragraph(statementDto.getBalance()))
+                    .setBorder(Border.NO_BORDER));
+            document.add(bodyTable);
+
+            Table footerTable = new Table(twoShortColumnsWidth);
+            footerTable.addCell(new Cell().add(new Paragraph("Replenishment"))
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBorderTop(Border.NO_BORDER)
+                    .setBorderLeft(Border.NO_BORDER));
+            footerTable.addCell(new Cell().add(new Paragraph("Withdrawal"))
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBorderTop(Border.NO_BORDER)
+                    .setBorderRight(Border.NO_BORDER));
+            footerTable.addCell(new Cell().add(new Paragraph(statementDto.getReplenishment()))
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBorderLeft(Border.NO_BORDER)
+                    .setBorderBottom(Border.NO_BORDER));
+            footerTable.addCell(new Cell().add(new Paragraph(statementDto.getWithdrawal()))
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBorderRight(Border.NO_BORDER)
+                    .setBorderBottom(Border.NO_BORDER));
+            document.add(footerTable);
+
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
