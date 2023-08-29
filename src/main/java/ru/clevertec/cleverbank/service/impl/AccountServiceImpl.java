@@ -105,6 +105,7 @@ public class AccountServiceImpl implements AccountService {
         }).toList();
 
         return AccountRecordDto.builder()
+                .id(account.getId())
                 .bank(account.getBank().getTitle())
                 .client(client)
                 .account(account.getId())
@@ -145,6 +146,7 @@ public class AccountServiceImpl implements AccountService {
         String withdrawal = "-" + accountRepository.findWithdrawalSumById(id).toString();
 
         return StatementDto.builder()
+                .id(account.getId())
                 .bank(account.getBank().getTitle())
                 .client(client)
                 .account(account.getId())

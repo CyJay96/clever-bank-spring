@@ -13,24 +13,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class BaseStatementDto {
 
-    @JsonProperty(value = "bank")
-    private String bank;
 
-    @JsonProperty(value = "client")
-    private String client;
-
-    @JsonProperty(value = "account")
-    private String account;
-
-    @JsonProperty(value = "accountCreateDate")
-    private String accountCreateDate;
-
-    @JsonProperty(value = "period")
-    private String period;
-
-    @JsonProperty(value = "createDateTime")
-    private String createDateTime;
-
-    @JsonProperty(value = "balance")
-    private String balance;
 }

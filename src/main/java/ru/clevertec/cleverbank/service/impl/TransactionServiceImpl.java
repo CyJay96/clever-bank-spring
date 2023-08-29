@@ -17,6 +17,7 @@ import ru.clevertec.cleverbank.model.enums.Status;
 import ru.clevertec.cleverbank.model.enums.TransactionType;
 import ru.clevertec.cleverbank.repository.AccountRepository;
 import ru.clevertec.cleverbank.repository.TransactionRepository;
+import ru.clevertec.cleverbank.service.DocumentService;
 import ru.clevertec.cleverbank.service.TransactionService;
 
 import java.time.OffsetDateTime;
@@ -35,6 +36,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final TransactionMapper transactionMapper;
+    private final DocumentService documentService;
 
     /**
      * Replenish balance an existing Account entity by ID
@@ -61,9 +63,11 @@ public class TransactionServiceImpl implements TransactionService {
                 .status(Status.ACTIVE)
                 .build();
 
-        System.out.println(getCheck(transaction));
+        Transaction savedTransaction = transactionRepository.save(transaction);
 
-        return transactionMapper.toTransactionDtoResponse(transactionRepository.save(transaction));
+        documentService.saveCheck(getCheck(savedTransaction));
+
+        return transactionMapper.toTransactionDtoResponse(savedTransaction);
     }
 
     /**
@@ -91,9 +95,11 @@ public class TransactionServiceImpl implements TransactionService {
                 .status(Status.ACTIVE)
                 .build();
 
-        System.out.println(getCheck(transaction));
+        Transaction savedTransaction = transactionRepository.save(transaction);
 
-        return transactionMapper.toTransactionDtoResponse(transactionRepository.save(transaction));
+        documentService.saveCheck(getCheck(savedTransaction));
+
+        return transactionMapper.toTransactionDtoResponse(savedTransaction);
     }
 
     /**
@@ -126,9 +132,11 @@ public class TransactionServiceImpl implements TransactionService {
                 .status(Status.ACTIVE)
                 .build();
 
-        System.out.println(getCheck(transaction));
+        Transaction savedTransaction = transactionRepository.save(transaction);
 
-        return transactionMapper.toTransactionDtoResponse(transactionRepository.save(transaction));
+        documentService.saveCheck(getCheck(savedTransaction));
+
+        return transactionMapper.toTransactionDtoResponse(savedTransaction);
     }
 
     /**
@@ -193,6 +201,7 @@ public class TransactionServiceImpl implements TransactionService {
         String time = OffsetDateTime.now().format(DateTimeFormatter.ofPattern(timeFormat));
 
         return CheckDto.builder()
+                .id(transaction.getId().toString())
                 .date(date)
                 .time(time)
                 .transactionType(transaction.getTransactionType().toString())

@@ -43,6 +43,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.1.0'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 
+    // PDF
+    implementation 'com.itextpdf:itext7-core:8.0.1'
+
     // Testing
     testImplementation 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'

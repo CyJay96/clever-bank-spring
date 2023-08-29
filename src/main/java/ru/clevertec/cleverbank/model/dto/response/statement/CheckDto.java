@@ -15,6 +15,9 @@ import java.io.Serializable;
 @Builder
 public class CheckDto implements Serializable {
 
+    @JsonProperty(value = "id")
+    private String id;
+
     @JsonProperty(value = "date")
     private String date;
 
